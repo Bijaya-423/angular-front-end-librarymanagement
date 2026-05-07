@@ -1,1 +1,47 @@
-<p>book-list works!</p>
+<div class="d-flex">
+
+  <app-sidebar></app-sidebar>
+
+  <div class="content-area">
+
+    <h2 class="mb-4">
+      📖 Books List
+    </h2>
+
+    <table class="table table-bordered table-striped">
+
+      <thead class="table-dark">
+
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Category</th>
+          <th>ISBN</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let book of books">
+
+          <td>{{ book.id }}</td>
+
+          <td>{{ book.title }}</td>
+
+          <td>{{ book.author }}</td>
+
+          <td>{{ book.category }}</td>
+
+          <td>{{ book.isbn }}</td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

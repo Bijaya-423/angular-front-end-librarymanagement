@@ -1,1 +1,47 @@
-<p>borrow-list works!</p>
+<div class="d-flex">
+
+  <app-sidebar></app-sidebar>
+
+  <div class="content-area">
+
+    <h2 class="mb-4">
+      📋 Borrow Records
+    </h2>
+
+    <table class="table table-bordered table-striped">
+
+      <thead class="table-dark">
+
+        <tr>
+          <th>ID</th>
+          <th>Book</th>
+          <th>Member</th>
+          <th>Status</th>
+          <th>Borrow Date</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let borrow of borrows">
+
+          <td>{{ borrow.id }}</td>
+
+          <td>{{ borrow.bookTitle }}</td>
+
+          <td>{{ borrow.memberName }}</td>
+
+          <td>{{ borrow.status }}</td>
+
+          <td>{{ borrow.borrowDate }}</td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

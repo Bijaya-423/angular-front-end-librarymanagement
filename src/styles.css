@@ -1,1 +1,53 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5;
+}
+
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: #1f2937;
+  color: white;
+  padding: 20px;
+  position: fixed;
+}
+
+.logo-section {
+  text-align: center;
+}
+
+.role-badge {
+  background: #0dcaf0;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+
+.menu-item {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.menu-item:hover {
+  background: #374151;
+}
+
+.active-link {
+  background: #2563eb;
+}
+
+.logout-btn {
+  width: 100%;
+  margin-top: 30px;
+}
+
+.content-area {
+  margin-left: 270px;
+  width: 100%;
+  padding: 20px;
+}

@@ -1,1 +1,125 @@
-<p>sidebar works!</p>
+<div class="sidebar">
+
+  <div class="logo-section">
+    <h2>📚 Library</h2>
+
+    <h4>{{ userName }}</h4>
+
+    <span class="role-badge">
+      {{ userRole }}
+    </span>
+  </div>
+
+  <hr>
+
+  <!-- ADMIN MENU -->
+  <div *ngIf="isAdmin">
+
+    <a routerLink="/dashboard/admin"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      🏠 Dashboard
+
+    </a>
+
+    <a routerLink="/admin/books"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      📖 Books
+
+    </a>
+
+    <a routerLink="/admin/members"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      👥 Members
+
+    </a>
+
+    <a routerLink="/admin/borrow-records"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      📋 Borrow Records
+
+    </a>
+
+  </div>
+
+  <!-- LIBRARIAN MENU -->
+  <div *ngIf="isLibrarian">
+
+    <a routerLink="/dashboard/librarian"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      🏠 Dashboard
+
+    </a>
+
+    <a routerLink="/librarian/books"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      📖 Books
+
+    </a>
+
+    <a routerLink="/librarian/members"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      👥 Members
+
+    </a>
+
+    <a routerLink="/librarian/borrow-requests"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      📋 Borrow Requests
+
+    </a>
+
+  </div>
+
+  <!-- MEMBER MENU -->
+  <div *ngIf="isMember">
+
+    <a routerLink="/dashboard/member"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      🏠 Dashboard
+
+    </a>
+
+    <a routerLink="/member/books"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      📖 Browse Books
+
+    </a>
+
+    <a routerLink="/member/history"
+       routerLinkActive="active-link"
+       class="menu-item">
+
+      📜 My History
+
+    </a>
+
+  </div>
+
+  <button class="logout-btn"
+          (click)="logout()">
+
+    🚪 Logout
+
+  </button>
+
+</div>
