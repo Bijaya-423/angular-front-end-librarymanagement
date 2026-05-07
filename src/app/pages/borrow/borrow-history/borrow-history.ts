@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-borrow-history',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './borrow-history.html',
-  styleUrl: './borrow-history.css',
+  styleUrl: './borrow-history.css'
 })
-export class BorrowHistory {}
+export class BorrowHistoryComponent {}
