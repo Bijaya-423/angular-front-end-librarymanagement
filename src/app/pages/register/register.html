@@ -1,1 +1,69 @@
-<p>register works!</p>
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card shadow p-4" style="width: 450px;">
+
+    <div class="text-center mb-4">
+      <h2 class="fw-bold text-success">📚 Register</h2>
+      <p class="text-muted">Create your account</p>
+    </div>
+
+    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+    <div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
+
+    <form (ngSubmit)="onRegister()">
+      <div class="mb-2">
+        <label class="form-label fw-semibold">Full Name</label>
+        <input type="text" class="form-control"
+               [(ngModel)]="member.name" name="name"
+               placeholder="Enter full name" required />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label fw-semibold">Email</label>
+        <input type="email" class="form-control"
+               [(ngModel)]="member.email" name="email"
+               placeholder="Enter email" required />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label fw-semibold">Password</label>
+        <input type="password" class="form-control"
+               [(ngModel)]="member.password" name="password"
+               placeholder="Enter password" required />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label fw-semibold">Phone</label>
+        <input type="text" class="form-control"
+               [(ngModel)]="member.phone" name="phone"
+               placeholder="Enter phone" />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label fw-semibold">Address</label>
+        <input type="text" class="form-control"
+               [(ngModel)]="member.address" name="address"
+               placeholder="Enter address" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Role</label>
+        <select class="form-select" [(ngModel)]="member.role" name="role">
+          <option value="MEMBER">Member</option>
+          <option value="LIBRARIAN">Librarian</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100"
+              [disabled]="loading">
+        {{ loading ? 'Registering...' : 'Register' }}
+      </button>
+    </form>
+
+    <div class="text-center mt-3">
+      <span class="text-muted">Already have an account? </span>
+      <a routerLink="/login" class="text-primary">Login</a>
+    </div>
+
+  </div>
+</div>
