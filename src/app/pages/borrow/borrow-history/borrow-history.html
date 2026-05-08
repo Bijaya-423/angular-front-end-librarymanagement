@@ -1,47 +1,53 @@
-<div class="d-flex">
+<h4 class="fw-bold mb-4">📜 My Borrow History</h4>
 
-  <app-sidebar></app-sidebar>
+<div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
+<div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
 
-  <div class="content-area">
-
-    <h2 class="mb-4">
-      📜 My Borrow History
-    </h2>
-
-    <table class="table table-bordered table-striped">
-
+<div class="card shadow">
+  <div class="card-body">
+    <table class="table table-hover">
       <thead class="table-dark">
-
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Book</th>
-          <th>Status</th>
           <th>Borrow Date</th>
+          <th>Due Date</th>
           <th>Return Date</th>
+          <th>Status</th>
+          <th>Action</th>
         </tr>
-
       </thead>
-
       <tbody>
-
-        <tr *ngFor="let borrow of borrows">
-
-          <td>{{ borrow.id }}</td>
-
-          <td>{{ borrow.bookTitle }}</td>
-
-          <td>{{ borrow.status }}</td>
-
-          <td>{{ borrow.borrowDate }}</td>
-
-          <td>{{ borrow.returnDate }}</td>
-
+        <tr *ngFor="let b of borrows; let i = index">
+          <td>{{ i+1 }}</td>
+          <td>{{ b.bookTitle }}</td>
+          <td>{{ b.borrowDate }}</td>
+          <td>{{ b.dueDate }}</td>
+          <td>{{ b.returnDate || '-' }}</td>
+          <td>
+            <span class="badge"
+              [class.bg-warning]="b.status==='PENDING'"
+              [class.bg-success]="b.status==='APPROVED'"
+              [class.bg-danger]="b.status==='REJECTED'"
+              [class.bg-secondary]="b.status==='RETURNED'">
+              {{ b.status }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-warning"
+                    *ngIf="b.status==='APPROVED' || b.status==='BORROWED'"
+                    (click)="returnBook(b.id!)">
+              Return
+            </button>
+            <span *ngIf="b.status==='RETURNED'" class="text-muted">✅ Done</span>
+            <span *ngIf="b.status==='PENDING'" class="text-warning">⏳ Pending</span>
+            <span *ngIf="b.status==='REJECTED'" class="text-danger">❌ Rejected</span>
+          </td>
         </tr>
-
+        <tr *ngIf="borrows.length === 0">
+          <td colspan="7" class="text-center text-muted">No history found</td>
+        </tr>
       </tbody>
-
     </table>
-
   </div>
-
 </div>

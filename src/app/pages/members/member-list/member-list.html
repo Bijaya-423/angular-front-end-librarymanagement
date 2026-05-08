@@ -1,47 +1,46 @@
-<div class="d-flex">
+<h4 class="fw-bold mb-4">👥 Members Management</h4>
 
-  <app-sidebar></app-sidebar>
+<div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
+<div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
 
-  <div class="content-area">
-
-    <h2 class="mb-4">
-      👥 Members List
-    </h2>
-
-    <table class="table table-bordered table-striped">
-
+<div class="card shadow">
+  <div class="card-body">
+    <table class="table table-hover">
       <thead class="table-dark">
-
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Name</th>
           <th>Email</th>
           <th>Phone</th>
           <th>Role</th>
+          <th *ngIf="isAdmin">Actions</th>
         </tr>
-
       </thead>
-
       <tbody>
-
-        <tr *ngFor="let member of members">
-
-          <td>{{ member.id }}</td>
-
+        <tr *ngFor="let member of members; let i = index">
+          <td>{{ i+1 }}</td>
           <td>{{ member.name }}</td>
-
           <td>{{ member.email }}</td>
-
           <td>{{ member.phone }}</td>
-
-          <td>{{ member.role }}</td>
-
+          <td>
+            <span class="badge"
+              [class.bg-danger]="member.role === 'ADMIN'"
+              [class.bg-warning]="member.role === 'LIBRARIAN'"
+              [class.bg-success]="member.role === 'MEMBER'">
+              {{ member.role }}
+            </span>
+          </td>
+          <td *ngIf="isAdmin">
+            <button class="btn btn-sm btn-danger"
+                    (click)="deleteMember(member.id!)">
+              Delete
+            </button>
+          </td>
         </tr>
-
+        <tr *ngIf="members.length === 0">
+          <td colspan="6" class="text-center text-muted">No members found</td>
+        </tr>
       </tbody>
-
     </table>
-
   </div>
-
 </div>

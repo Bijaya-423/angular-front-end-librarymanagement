@@ -1,47 +1,116 @@
-<div class="d-flex">
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold">📖 Books Management</h4>
+  <button class="btn btn-primary"
+          *ngIf="isAdmin || isLibrarian"
+          (click)="openAddModal()">
+    + Add Book
+  </button>
+</div>
 
-  <app-sidebar></app-sidebar>
+<!-- Search -->
+<div class="input-group mb-3" style="max-width:400px;">
+  <input type="text" class="form-control"
+         placeholder="Search by title..."
+         [(ngModel)]="searchTerm"
+         (input)="onSearch()" />
+  <button class="btn btn-outline-secondary" (click)="loadBooks()">Clear</button>
+</div>
 
-  <div class="content-area">
+<div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
+<div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
 
-    <h2 class="mb-4">
-      📖 Books List
-    </h2>
-
-    <table class="table table-bordered table-striped">
-
+<div class="card shadow">
+  <div class="card-body">
+    <table class="table table-hover">
       <thead class="table-dark">
-
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Title</th>
           <th>Author</th>
           <th>Category</th>
-          <th>ISBN</th>
+          <th>Available</th>
+          <th>Actions</th>
         </tr>
-
       </thead>
-
       <tbody>
-
-        <tr *ngFor="let book of books">
-
-          <td>{{ book.id }}</td>
-
+        <tr *ngFor="let book of books; let i = index">
+          <td>{{ i+1 }}</td>
           <td>{{ book.title }}</td>
-
           <td>{{ book.author }}</td>
-
           <td>{{ book.category }}</td>
-
-          <td>{{ book.isbn }}</td>
-
+          <td>
+            <span [class]="book.availableCopies! > 0 ? 'badge bg-success' : 'badge bg-danger'">
+              {{ book.availableCopies }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-success me-1"
+                    *ngIf="isMember && book.availableCopies! > 0"
+                    (click)="borrowBook(book.id!)">
+              Borrow
+            </button>
+            <button class="btn btn-sm btn-warning me-1"
+                    *ngIf="isAdmin || isLibrarian"
+                    (click)="openEditModal(book)">
+              Edit
+            </button>
+            <button class="btn btn-sm btn-danger"
+                    *ngIf="isAdmin"
+                    (click)="deleteBook(book.id!)">
+              Delete
+            </button>
+          </td>
         </tr>
-
+        <tr *ngIf="books.length === 0">
+          <td colspan="6" class="text-center text-muted">No books found</td>
+        </tr>
       </tbody>
-
     </table>
-
   </div>
+</div>
 
+<!-- Modal -->
+<div class="modal fade" id="bookModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">{{ isEditing ? 'Edit Book' : 'Add Book' }}</h5>
+        <button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2">
+          <label class="form-label">Title</label>
+          <input type="text" class="form-control" [(ngModel)]="bookForm.title" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Author</label>
+          <input type="text" class="form-control" [(ngModel)]="bookForm.author" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">ISBN</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="bookForm.isbn" [disabled]="isEditing" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Category</label>
+          <input type="text" class="form-control" [(ngModel)]="bookForm.category" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Publisher</label>
+          <input type="text" class="form-control" [(ngModel)]="bookForm.publisher" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Total Copies</label>
+          <input type="number" class="form-control" [(ngModel)]="bookForm.totalCopies" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" (click)="saveBook()">
+          {{ isEditing ? 'Update' : 'Add' }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

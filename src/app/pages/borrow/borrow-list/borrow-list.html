@@ -1,47 +1,52 @@
-<div class="d-flex">
+<h4 class="fw-bold mb-4">📋 Borrow Records</h4>
 
-  <app-sidebar></app-sidebar>
+<div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
+<div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
 
-  <div class="content-area">
-
-    <h2 class="mb-4">
-      📋 Borrow Records
-    </h2>
-
-    <table class="table table-bordered table-striped">
-
+<div class="card shadow">
+  <div class="card-body">
+    <table class="table table-hover">
       <thead class="table-dark">
-
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Book</th>
           <th>Member</th>
-          <th>Status</th>
           <th>Borrow Date</th>
+          <th>Due Date</th>
+          <th>Status</th>
+          <th *ngIf="isLibrarian">Actions</th>
         </tr>
-
       </thead>
-
       <tbody>
-
-        <tr *ngFor="let borrow of borrows">
-
-          <td>{{ borrow.id }}</td>
-
-          <td>{{ borrow.bookTitle }}</td>
-
-          <td>{{ borrow.memberName }}</td>
-
-          <td>{{ borrow.status }}</td>
-
-          <td>{{ borrow.borrowDate }}</td>
-
+        <tr *ngFor="let b of borrows; let i = index">
+          <td>{{ i+1 }}</td>
+          <td>{{ b.bookTitle }}</td>
+          <td>{{ b.memberName }}</td>
+          <td>{{ b.borrowDate }}</td>
+          <td>{{ b.dueDate }}</td>
+          <td>
+            <span class="badge"
+              [class.bg-warning]="b.status==='PENDING'"
+              [class.bg-success]="b.status==='APPROVED'"
+              [class.bg-danger]="b.status==='REJECTED'"
+              [class.bg-primary]="b.status==='BORROWED'"
+              [class.bg-secondary]="b.status==='RETURNED'">
+              {{ b.status }}
+            </span>
+          </td>
+          <td *ngIf="isLibrarian">
+            <button class="btn btn-sm btn-success me-1"
+                    *ngIf="b.status==='PENDING'"
+                    (click)="approve(b.id!)">Approve</button>
+            <button class="btn btn-sm btn-danger"
+                    *ngIf="b.status==='PENDING'"
+                    (click)="reject(b.id!)">Reject</button>
+          </td>
         </tr>
-
+        <tr *ngIf="borrows.length === 0">
+          <td colspan="7" class="text-center text-muted">No records</td>
+        </tr>
       </tbody>
-
     </table>
-
   </div>
-
 </div>

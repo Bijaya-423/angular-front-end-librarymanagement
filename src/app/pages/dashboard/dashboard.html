@@ -1,108 +1,46 @@
-<div class="d-flex">
+<!-- Welcome Card -->
+<div class="card shadow mb-4">
+  <div class="card-body">
+    <h4 class="card-title">Welcome, {{ userName }}! 👋</h4>
+    <p class="text-muted">Role: <strong>{{ userRole }}</strong></p>
+  </div>
+</div>
 
-  <!-- Sidebar -->
-  <div class="bg-dark text-white vh-100 p-3" style="width: 250px; min-width: 250px;">
-    <h5 class="text-center mb-4">📚 Library</h5>
-    <p class="text-center text-warning">{{ userName }}</p>
-    <p class="text-center badge bg-info">{{ userRole }}</p>
-    <hr class="border-secondary">
-
-    <ul class="nav flex-column">
-
-      <!-- Admin Links -->
-      <ng-container *ngIf="isAdmin">
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" routerLink="/books">📖 Books</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" routerLink="/members">👥 Members</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" routerLink="/borrow/list">📋 Borrow Records</a>
-        </li>
-      </ng-container>
-
-      <!-- Librarian Links -->
-      <ng-container *ngIf="isLibrarian">
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" routerLink="/books">📖 Books</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" routerLink="/members">👥 Members</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" routerLink="/borrow/list">📋 Borrow Requests</a>
-        </li>
-      </ng-container>
-
-      <!-- Member Links -->
-      <ng-container *ngIf="isMember">
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" routerLink="/books">📖 Browse Books</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" routerLink="/borrow/history">📜 My History</a>
-        </li>
-      </ng-container>
-
-    </ul>
-
-    <div class="mt-auto position-absolute bottom-0 mb-4">
-      <button class="btn btn-danger btn-sm" (click)="logout()">
-        🚪 Logout
-      </button>
+<!-- Stats Cards -->
+<div class="row g-3">
+  <div class="col-md-4" *ngIf="isAdmin || isLibrarian">
+    <div class="card text-white bg-primary shadow">
+      <div class="card-body">
+        <h5>📖 Total Books</h5>
+        <h2>{{ totalBooks }}</h2>
+      </div>
     </div>
   </div>
 
-  <!-- Main Content -->
-  <div class="flex-grow-1 p-4 bg-light">
-
-    <!-- Welcome Card -->
-    <div class="card shadow mb-4">
+  <div class="col-md-4" *ngIf="isAdmin">
+    <div class="card text-white bg-success shadow">
       <div class="card-body">
-        <h4 class="card-title">Welcome, {{ userName }}! 👋</h4>
-        <p class="text-muted">Role: <strong>{{ userRole }}</strong></p>
+        <h5>👥 Total Members</h5>
+        <h2>{{ totalMembers }}</h2>
       </div>
     </div>
+  </div>
 
-    <!-- Stats Cards -->
-    <div class="row g-3">
-      <div class="col-md-4" *ngIf="isAdmin || isLibrarian">
-        <div class="card text-white bg-primary shadow">
-          <div class="card-body">
-            <h5>📖 Total Books</h5>
-            <h2>{{ totalBooks }}</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4" *ngIf="isAdmin">
-        <div class="card text-white bg-success shadow">
-          <div class="card-body">
-            <h5>👥 Total Members</h5>
-            <h2>{{ totalMembers }}</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4" *ngIf="isAdmin || isLibrarian">
-        <div class="card text-white bg-warning shadow">
-          <div class="card-body">
-            <h5>📋 Borrow Records</h5>
-            <h2>{{ totalBorrows }}</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4" *ngIf="isMember">
-        <div class="card text-white bg-info shadow">
-          <div class="card-body">
-            <h5>📜 My Borrows</h5>
-            <h2>{{ myBorrows }}</h2>
-          </div>
-        </div>
+  <div class="col-md-4" *ngIf="isAdmin || isLibrarian">
+    <div class="card text-white bg-warning shadow">
+      <div class="card-body">
+        <h5>📋 Borrow Records</h5>
+        <h2>{{ totalBorrows }}</h2>
       </div>
     </div>
+  </div>
 
+  <div class="col-md-4" *ngIf="isMember">
+    <div class="card text-white bg-info shadow">
+      <div class="card-body">
+        <h5>📜 My Borrows</h5>
+        <h2>{{ myBorrows }}</h2>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,0 +1,121 @@
+<div class="d-flex">
+
+  <!-- ✅ FIXED SIDEBAR — same for all pages -->
+  <div class="bg-dark text-white p-3 d-flex flex-column"
+       style="width:250px; min-height:100vh; position:fixed; top:0; left:0; z-index:100;">
+
+    <!-- Logo -->
+    <div class="text-center mb-3">
+      <h5 class="fw-bold">📚 Library</h5>
+      <p class="text-warning mb-0 fw-semibold">{{ userName }}</p>
+      <span class="badge bg-info mt-1">{{ userRole }}</span>
+    </div>
+
+    <hr class="border-secondary">
+
+    <!-- ✅ ADMIN SIDEBAR -->
+    <ul class="nav flex-column" *ngIf="isAdmin">
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/dashboard/admin"
+           routerLinkActive="bg-primary">
+          🏠 Dashboard
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/books"
+           routerLinkActive="bg-primary">
+          📖 Books
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/members"
+           routerLinkActive="bg-primary">
+          👥 Members
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/borrow/list"
+           routerLinkActive="bg-primary">
+          📋 Borrow Records
+        </a>
+      </li>
+    </ul>
+
+    <!-- ✅ LIBRARIAN SIDEBAR -->
+    <ul class="nav flex-column" *ngIf="isLibrarian">
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/dashboard/librarian"
+           routerLinkActive="bg-primary">
+          🏠 Dashboard
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/books"
+           routerLinkActive="bg-primary">
+          📖 Books
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/members"
+           routerLinkActive="bg-primary">
+          👥 Members
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/borrow/list"
+           routerLinkActive="bg-primary">
+          📋 Borrow Requests
+        </a>
+      </li>
+    </ul>
+
+    <!-- ✅ MEMBER SIDEBAR -->
+    <ul class="nav flex-column" *ngIf="isMember">
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/dashboard/member"
+           routerLinkActive="bg-primary">
+          🏠 Dashboard
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/books"
+           routerLinkActive="bg-primary">
+          📖 Browse Books
+        </a>
+      </li>
+      <li class="nav-item mb-1">
+        <a class="nav-link text-white rounded px-3 py-2"
+           routerLink="/borrow/history"
+           routerLinkActive="bg-primary">
+          📜 My History
+        </a>
+      </li>
+    </ul>
+
+    <!-- Logout at bottom -->
+    <div class="mt-auto pt-3">
+      <button class="btn btn-danger w-100" (click)="logout()">
+        🚪 Logout
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ✅ MAIN CONTENT — shifts right by sidebar width -->
+  <div class="flex-grow-1 bg-light"
+       style="margin-left:250px; min-height:100vh; padding:24px;">
+    <!-- All child pages render here -->
+    <router-outlet></router-outlet>
+  </div>
+
+</div>
