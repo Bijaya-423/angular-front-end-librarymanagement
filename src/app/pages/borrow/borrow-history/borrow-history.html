@@ -1,15 +1,47 @@
-<h4 class="fw-bold mb-4">📜 My Borrow History</h4>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="fw-bold">📜 My Borrow History</h4>
+  <span class="badge bg-dark fs-6">Total: {{ borrows.length }}</span>
+</div>
 
 <div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
 <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
 
+<!-- My Stats -->
+<div class="row g-2 mb-3">
+  <div class="col-md-3">
+    <div class="card text-white bg-info text-center p-2">
+      <small>Total</small>
+      <h4>{{ borrows.length }}</h4>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white text-center p-2"
+         style="background:#fd7e14">
+      <small>Pending</small>
+      <h4>{{ countByStatus('PENDING') }}</h4>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-success text-center p-2">
+      <small>Approved</small>
+      <h4>{{ countByStatus('APPROVED') }}</h4>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-secondary text-center p-2">
+      <small>Returned</small>
+      <h4>{{ countByStatus('RETURNED') }}</h4>
+    </div>
+  </div>
+</div>
+
 <div class="card shadow">
-  <div class="card-body">
-    <table class="table table-hover">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
       <thead class="table-dark">
         <tr>
           <th>#</th>
-          <th>Book</th>
+          <th>Book Title</th>
           <th>Borrow Date</th>
           <th>Due Date</th>
           <th>Return Date</th>
@@ -19,16 +51,23 @@
       </thead>
       <tbody>
         <tr *ngFor="let b of borrows; let i = index">
-          <td>{{ i+1 }}</td>
-          <td>{{ b.bookTitle }}</td>
+          <td>{{ i + 1 }}</td>
+          <td class="fw-semibold">{{ b.bookTitle }}</td>
           <td>{{ b.borrowDate }}</td>
-          <td>{{ b.dueDate }}</td>
+          <td>
+            <span [class]="b.status !== 'RETURNED'
+              && b.dueDate! < today
+              ? 'text-danger fw-bold' : ''">
+              {{ b.dueDate }}
+            </span>
+          </td>
           <td>{{ b.returnDate || '-' }}</td>
           <td>
             <span class="badge"
               [class.bg-warning]="b.status==='PENDING'"
               [class.bg-success]="b.status==='APPROVED'"
               [class.bg-danger]="b.status==='REJECTED'"
+              [class.bg-primary]="b.status==='BORROWED'"
               [class.bg-secondary]="b.status==='RETURNED'">
               {{ b.status }}
             </span>
@@ -37,15 +76,20 @@
             <button class="btn btn-sm btn-warning"
                     *ngIf="b.status==='APPROVED' || b.status==='BORROWED'"
                     (click)="returnBook(b.id!)">
-              Return
+              📤 Return
             </button>
-            <span *ngIf="b.status==='RETURNED'" class="text-muted">✅ Done</span>
-            <span *ngIf="b.status==='PENDING'" class="text-warning">⏳ Pending</span>
-            <span *ngIf="b.status==='REJECTED'" class="text-danger">❌ Rejected</span>
+            <span class="text-success"
+                  *ngIf="b.status==='RETURNED'">✅ Done</span>
+            <span class="text-warning"
+                  *ngIf="b.status==='PENDING'">⏳ Waiting...</span>
+            <span class="text-danger"
+                  *ngIf="b.status==='REJECTED'">❌ Rejected</span>
           </td>
         </tr>
         <tr *ngIf="borrows.length === 0">
-          <td colspan="7" class="text-center text-muted">No history found</td>
+          <td colspan="7" class="text-center text-muted py-4">
+            No borrow history found
+          </td>
         </tr>
       </tbody>
     </table>

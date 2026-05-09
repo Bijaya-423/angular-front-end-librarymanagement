@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
 import { BookService } from '../../../core/services/book';
 import { BorrowService } from '../../../core/services/borrow';
 import { AuthService } from '../../../core/services/auth';
@@ -20,31 +19,27 @@ export class BookListComponent implements OnInit {
 
   books: Book[] = [];
   searchTerm = '';
+  categoryFilter = '';        // ← added
   successMsg = '';
   errorMsg = '';
   isEditing = false;
-  userName = '';
-  userRole = '';
   isAdmin = false;
   isLibrarian = false;
   isMember = false;
+  editingId: number | null = null;
 
   bookForm: Book = {
     title: '', author: '', isbn: '',
     category: '', publisher: '', totalCopies: 1
   };
-  editingId: number | null = null;
 
   constructor(
     private bookService: BookService,
     private borrowService: BorrowService,
-    private authService: AuthService,
-    private router: Router
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    this.userName = this.authService.getName() || '';
-    this.userRole = this.authService.getRole() || '';
     this.isAdmin = this.authService.isAdmin();
     this.isLibrarian = this.authService.isLibrarian();
     this.isMember = this.authService.isMember();
@@ -53,20 +48,43 @@ export class BookListComponent implements OnInit {
 
   loadBooks() {
     this.searchTerm = '';
+    this.categoryFilter = '';
     this.bookService.getAllBooks().subscribe({
       next: (data) => this.books = data,
-      error: () => this.errorMsg = 'Failed to load books'
+      error: () => this.showError('Failed to load books')
     });
   }
 
   onSearch() {
     if (this.searchTerm.trim()) {
       this.bookService.searchBooks(this.searchTerm).subscribe({
-        next: (data) => this.books = data
+        next: (data) => this.books = data,
+        error: () => this.showError('Search failed')
       });
     } else {
       this.loadBooks();
     }
+  }
+
+  onCategoryFilter() {          // ← added
+    if (this.categoryFilter.trim()) {
+      this.bookService.getBooksByCategory(
+        this.categoryFilter).subscribe({
+        next: (data) => this.books = data,
+        error: () => this.showError('Filter failed')
+      });
+    } else {
+      this.loadBooks();
+    }
+  }
+
+  viewBook(id: number) {        // ← added
+    this.bookService.getBookById(id).subscribe({
+      next: (book) => alert(
+        `Title: ${book.title}\nAuthor: ${book.author}\nISBN: ${book.isbn}\nCategory: ${book.category}\nPublisher: ${book.publisher}\nTotal Copies: ${book.totalCopies}\nAvailable: ${book.availableCopies}`
+      ),
+      error: () => this.showError('Failed to load book')
+    });
   }
 
   openAddModal() {
@@ -87,64 +105,70 @@ export class BookListComponent implements OnInit {
 
   saveBook() {
     if (this.isEditing && this.editingId) {
-      this.bookService.updateBook(this.editingId, this.bookForm).subscribe({
+      this.bookService.updateBook(
+        this.editingId, this.bookForm).subscribe({
         next: () => {
-          this.successMsg = 'Book updated!';
+          this.showSuccess('Book updated!');
           this.hideModal();
           this.loadBooks();
-          setTimeout(() => this.successMsg = '', 3000);
         },
-        error: () => this.errorMsg = 'Update failed'
+        error: () => this.showError('Update failed')
       });
     } else {
       this.bookService.addBook(this.bookForm).subscribe({
         next: () => {
-          this.successMsg = 'Book added!';
+          this.showSuccess('Book added!');
           this.hideModal();
           this.loadBooks();
-          setTimeout(() => this.successMsg = '', 3000);
         },
-        error: () => this.errorMsg = 'Add failed'
+        error: (err) => this.showError(
+          err.error?.error || 'Add failed')
       });
     }
   }
 
   deleteBook(id: number) {
-    if (confirm('Are you sure you want to delete this book?')) {
+    if (confirm('Delete this book?')) {
       this.bookService.deleteBook(id).subscribe({
         next: () => {
-          this.successMsg = 'Book deleted!';
+          this.showSuccess('Book deleted!');
           this.loadBooks();
-          setTimeout(() => this.successMsg = '', 3000);
         },
-        error: () => this.errorMsg = 'Delete failed'
+        error: () => this.showError('Delete failed')
       });
     }
   }
 
   borrowBook(bookId: number) {
     this.borrowService.requestBorrow(bookId).subscribe({
-      next: () => {
-        this.successMsg = 'Borrow request sent! Waiting for approval.';
-        this.loadBooks();
-        setTimeout(() => this.successMsg = '', 3000);
-      },
-      error: () => this.errorMsg = 'Borrow request failed'
+      next: () => this.showSuccess(
+        'Borrow request sent! Waiting for approval.'),
+      error: (err) => this.showError(
+        err.error?.error || 'Borrow failed')
     });
   }
 
   showModal() {
-    const modal = new bootstrap.Modal(document.getElementById('bookModal'));
+    const modal = new bootstrap.Modal(
+      document.getElementById('bookModal'));
     modal.show();
   }
 
   hideModal() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+    const modal = bootstrap.Modal.getInstance(
+      document.getElementById('bookModal'));
     if (modal) modal.hide();
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  showSuccess(msg: string) {
+    this.successMsg = msg;
+    this.errorMsg = '';
+    setTimeout(() => this.successMsg = '', 4000);
+  }
+
+  showError(msg: string) {
+    this.errorMsg = msg;
+    this.successMsg = '';
+    setTimeout(() => this.errorMsg = '', 4000);
   }
 }

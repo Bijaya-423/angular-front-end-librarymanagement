@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MemberService } from '../../../core/services/member';
 import { AuthService } from '../../../core/services/auth';
 import { Member } from '../../../models/member.model';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-member-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule], // ← pipe removed
   templateUrl: './member-list.html',
   styleUrl: './member-list.css'
 })
@@ -17,20 +19,26 @@ export class MemberListComponent implements OnInit {
   members: Member[] = [];
   successMsg = '';
   errorMsg = '';
-  userName = '';
-  userRole = '';
   isAdmin = false;
   isLibrarian = false;
+  selectedMember: Member | null = null;
+
+  // ← count properties directly
+  adminCount = 0;
+  librarianCount = 0;
+  memberCount = 0;
+
+  editForm: Member = {
+    name: '', email: '',
+    phone: '', address: '', role: 'MEMBER'
+  };
 
   constructor(
     private memberService: MemberService,
-    private authService: AuthService,
-    private router: Router
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    this.userName = this.authService.getName() || '';
-    this.userRole = this.authService.getRole() || '';
     this.isAdmin = this.authService.isAdmin();
     this.isLibrarian = this.authService.isLibrarian();
     this.loadMembers();
@@ -38,8 +46,51 @@ export class MemberListComponent implements OnInit {
 
   loadMembers() {
     this.memberService.getAllMembers().subscribe({
-      next: (data) => this.members = data,
-      error: () => this.errorMsg = 'Failed to load members'
+      next: (data) => {
+        this.members = data;
+        // calculate counts here directly
+        this.adminCount = data.filter(
+          m => m.role === 'ADMIN').length;
+        this.librarianCount = data.filter(
+          m => m.role === 'LIBRARIAN').length;
+        this.memberCount = data.filter(
+          m => m.role === 'MEMBER').length;
+      },
+      error: () => this.showError('Failed to load members')
+    });
+  }
+
+  viewMember(id: number) {
+    this.memberService.getMemberById(id).subscribe({
+      next: (member) => {
+        this.selectedMember = member;
+        const modal = new bootstrap.Modal(
+          document.getElementById('viewModal'));
+        modal.show();
+      },
+      error: () => this.showError('Failed to load member')
+    });
+  }
+
+  openEditModal(member: Member) {
+    this.editForm = { ...member };
+    const modal = new bootstrap.Modal(
+      document.getElementById('editModal'));
+    modal.show();
+  }
+
+  updateMember() {
+    if (!this.editForm.id) return;
+    this.memberService.updateMember(
+      this.editForm.id, this.editForm).subscribe({
+      next: () => {
+        this.showSuccess('Member updated!');
+        this.loadMembers();
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById('editModal'));
+        if (modal) modal.hide();
+      },
+      error: () => this.showError('Update failed')
     });
   }
 
@@ -47,17 +98,23 @@ export class MemberListComponent implements OnInit {
     if (confirm('Delete this member?')) {
       this.memberService.deleteMember(id).subscribe({
         next: () => {
-          this.successMsg = 'Member deleted!';
+          this.showSuccess('Member deleted!');
           this.loadMembers();
-          setTimeout(() => this.successMsg = '', 3000);
         },
-        error: () => this.errorMsg = 'Delete failed'
+        error: () => this.showError('Delete failed')
       });
     }
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  showSuccess(msg: string) {
+    this.successMsg = msg;
+    this.errorMsg = '';
+    setTimeout(() => this.successMsg = '', 4000);
+  }
+
+  showError(msg: string) {
+    this.errorMsg = msg;
+    this.successMsg = '';
+    setTimeout(() => this.errorMsg = '', 4000);
   }
 }

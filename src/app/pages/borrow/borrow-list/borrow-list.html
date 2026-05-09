@@ -1,11 +1,68 @@
-<h4 class="fw-bold mb-4">📋 Borrow Records</h4>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="fw-bold">📋 Borrow Records</h4>
+  <span class="badge bg-dark fs-6">Total: {{ borrows.length }}</span>
+</div>
 
 <div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
 <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
 
+<!-- Stats -->
+<div class="row g-2 mb-3">
+  <div class="col">
+    <div class="card text-white text-center p-2"
+         style="background:#6c757d; cursor:pointer"
+         (click)="onFilterChange('ALL')">
+      <small>All</small>
+      <h5>{{ borrows.length }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card text-white text-center p-2"
+         style="background:#fd7e14; cursor:pointer"
+         (click)="onFilterChange('PENDING')">
+      <small>Pending</small>
+      <h5>{{ countByStatus('PENDING') }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card text-white bg-success text-center p-2"
+         style="cursor:pointer"
+         (click)="onFilterChange('APPROVED')">
+      <small>Approved</small>
+      <h5>{{ countByStatus('APPROVED') }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card text-white bg-danger text-center p-2"
+         style="cursor:pointer"
+         (click)="onFilterChange('REJECTED')">
+      <small>Rejected</small>
+      <h5>{{ countByStatus('REJECTED') }}</h5>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card text-white bg-primary text-center p-2"
+         style="cursor:pointer"
+         (click)="onFilterChange('RETURNED')">
+      <small>Returned</small>
+      <h5>{{ countByStatus('RETURNED') }}</h5>
+    </div>
+  </div>
+</div>
+
+<!-- Active filter badge -->
+<div class="mb-2" *ngIf="filterStatus !== 'ALL'">
+  <span class="badge bg-secondary">
+    Filtering: {{ filterStatus }}
+  </span>
+  <button class="btn btn-sm btn-link"
+          (click)="onFilterChange('ALL')">Clear filter</button>
+</div>
+
+<!-- Table -->
 <div class="card shadow">
-  <div class="card-body">
-    <table class="table table-hover">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
       <thead class="table-dark">
         <tr>
           <th>#</th>
@@ -13,17 +70,19 @@
           <th>Member</th>
           <th>Borrow Date</th>
           <th>Due Date</th>
+          <th>Return Date</th>
           <th>Status</th>
-          <th *ngIf="isLibrarian">Actions</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let b of borrows; let i = index">
-          <td>{{ i+1 }}</td>
-          <td>{{ b.bookTitle }}</td>
+        <tr *ngFor="let b of filteredBorrows; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td class="fw-semibold">{{ b.bookTitle }}</td>
           <td>{{ b.memberName }}</td>
           <td>{{ b.borrowDate }}</td>
           <td>{{ b.dueDate }}</td>
+          <td>{{ b.returnDate || '-' }}</td>
           <td>
             <span class="badge"
               [class.bg-warning]="b.status==='PENDING'"
@@ -34,17 +93,32 @@
               {{ b.status }}
             </span>
           </td>
-          <td *ngIf="isLibrarian">
+          <td>
+            <!-- View (all) -->
+            <button class="btn btn-sm btn-info me-1"
+                    (click)="viewBorrow(b.id!)">
+              View
+            </button>
+
+            <!-- Approve (Librarian, PENDING only) -->
             <button class="btn btn-sm btn-success me-1"
-                    *ngIf="b.status==='PENDING'"
-                    (click)="approve(b.id!)">Approve</button>
+                    *ngIf="isLibrarian && b.status==='PENDING'"
+                    (click)="approve(b.id!)">
+              ✅ Approve
+            </button>
+
+            <!-- Reject (Librarian, PENDING only) -->
             <button class="btn btn-sm btn-danger"
-                    *ngIf="b.status==='PENDING'"
-                    (click)="reject(b.id!)">Reject</button>
+                    *ngIf="isLibrarian && b.status==='PENDING'"
+                    (click)="reject(b.id!)">
+              ❌ Reject
+            </button>
           </td>
         </tr>
-        <tr *ngIf="borrows.length === 0">
-          <td colspan="7" class="text-center text-muted">No records</td>
+        <tr *ngIf="filteredBorrows.length === 0">
+          <td colspan="8" class="text-center text-muted py-4">
+            No records found
+          </td>
         </tr>
       </tbody>
     </table>

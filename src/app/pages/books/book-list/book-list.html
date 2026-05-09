@@ -1,4 +1,4 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
   <h4 class="fw-bold">📖 Books Management</h4>
   <button class="btn btn-primary"
           *ngIf="isAdmin || isLibrarian"
@@ -7,53 +7,99 @@
   </button>
 </div>
 
-<!-- Search -->
-<div class="input-group mb-3" style="max-width:400px;">
-  <input type="text" class="form-control"
-         placeholder="Search by title..."
-         [(ngModel)]="searchTerm"
-         (input)="onSearch()" />
-  <button class="btn btn-outline-secondary" (click)="loadBooks()">Clear</button>
+<!-- Alerts -->
+<div *ngIf="successMsg" class="alert alert-success alert-dismissible">
+  {{ successMsg }}
+</div>
+<div *ngIf="errorMsg" class="alert alert-danger alert-dismissible">
+  {{ errorMsg }}
 </div>
 
-<div *ngIf="successMsg" class="alert alert-success">{{ successMsg }}</div>
-<div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+<!-- Search & Filter -->
+<div class="row mb-3">
+  <div class="col-md-5">
+    <div class="input-group">
+      <input type="text" class="form-control"
+             placeholder="Search by title..."
+             [(ngModel)]="searchTerm"
+             (input)="onSearch()" />
+      <button class="btn btn-outline-secondary"
+              (click)="loadBooks()">Clear</button>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="input-group">
+      <input type="text" class="form-control"
+             placeholder="Filter by category..."
+             [(ngModel)]="categoryFilter"
+             (input)="onCategoryFilter()" />
+    </div>
+  </div>
+</div>
 
+<!-- Books Table -->
 <div class="card shadow">
-  <div class="card-body">
-    <table class="table table-hover">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
       <thead class="table-dark">
         <tr>
           <th>#</th>
           <th>Title</th>
           <th>Author</th>
+          <th>ISBN</th>
           <th>Category</th>
+          <th>Publisher</th>
+          <th>Total</th>
           <th>Available</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let book of books; let i = index">
-          <td>{{ i+1 }}</td>
-          <td>{{ book.title }}</td>
+          <td>{{ i + 1 }}</td>
+          <td class="fw-semibold">{{ book.title }}</td>
           <td>{{ book.author }}</td>
-          <td>{{ book.category }}</td>
+          <td><small>{{ book.isbn }}</small></td>
           <td>
-            <span [class]="book.availableCopies! > 0 ? 'badge bg-success' : 'badge bg-danger'">
+            <span class="badge bg-secondary">
+              {{ book.category }}
+            </span>
+          </td>
+          <td>{{ book.publisher }}</td>
+          <td>{{ book.totalCopies }}</td>
+          <td>
+            <span [class]="book.availableCopies! > 0
+              ? 'badge bg-success'
+              : 'badge bg-danger'">
               {{ book.availableCopies }}
             </span>
           </td>
           <td>
+            <!-- View (all roles) -->
+            <button class="btn btn-sm btn-info me-1"
+                    (click)="viewBook(book.id!)">
+              View
+            </button>
+
+            <!-- Borrow (Member only) -->
             <button class="btn btn-sm btn-success me-1"
                     *ngIf="isMember && book.availableCopies! > 0"
                     (click)="borrowBook(book.id!)">
               Borrow
             </button>
+            <span class="badge bg-danger"
+                  *ngIf="isMember && book.availableCopies === 0">
+              Not Available
+            </span>
+
+            <!-- Edit (Admin & Librarian) -->
             <button class="btn btn-sm btn-warning me-1"
                     *ngIf="isAdmin || isLibrarian"
                     (click)="openEditModal(book)">
               Edit
             </button>
+
+            <!-- Delete (Admin only) -->
             <button class="btn btn-sm btn-danger"
                     *ngIf="isAdmin"
                     (click)="deleteBook(book.id!)">
@@ -62,53 +108,71 @@
           </td>
         </tr>
         <tr *ngIf="books.length === 0">
-          <td colspan="6" class="text-center text-muted">No books found</td>
+          <td colspan="9" class="text-center text-muted py-4">
+            No books found
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Add/Edit Modal -->
 <div class="modal fade" id="bookModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">{{ isEditing ? 'Edit Book' : 'Add Book' }}</h5>
+        <h5 class="modal-title">
+          {{ isEditing ? '✏️ Edit Book' : '➕ Add New Book' }}
+        </h5>
         <button type="button" class="btn-close btn-close-white"
                 data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <div class="mb-2">
-          <label class="form-label">Title</label>
-          <input type="text" class="form-control" [(ngModel)]="bookForm.title" />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Author</label>
-          <input type="text" class="form-control" [(ngModel)]="bookForm.author" />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">ISBN</label>
+          <label class="form-label fw-semibold">Title *</label>
           <input type="text" class="form-control"
-                 [(ngModel)]="bookForm.isbn" [disabled]="isEditing" />
+                 [(ngModel)]="bookForm.title"
+                 placeholder="Enter book title" />
         </div>
         <div class="mb-2">
-          <label class="form-label">Category</label>
-          <input type="text" class="form-control" [(ngModel)]="bookForm.category" />
+          <label class="form-label fw-semibold">Author *</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="bookForm.author"
+                 placeholder="Enter author name" />
         </div>
         <div class="mb-2">
-          <label class="form-label">Publisher</label>
-          <input type="text" class="form-control" [(ngModel)]="bookForm.publisher" />
+          <label class="form-label fw-semibold">ISBN *</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="bookForm.isbn"
+                 [disabled]="isEditing"
+                 placeholder="Enter ISBN" />
         </div>
         <div class="mb-2">
-          <label class="form-label">Total Copies</label>
-          <input type="number" class="form-control" [(ngModel)]="bookForm.totalCopies" />
+          <label class="form-label fw-semibold">Category</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="bookForm.category"
+                 placeholder="e.g. Technology, Fiction" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label fw-semibold">Publisher</label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="bookForm.publisher"
+                 placeholder="Enter publisher" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label fw-semibold">Total Copies *</label>
+          <input type="number" class="form-control"
+                 [(ngModel)]="bookForm.totalCopies"
+                 min="1" />
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-primary" (click)="saveBook()">
-          {{ isEditing ? 'Update' : 'Add' }}
+        <button class="btn btn-secondary"
+                data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary"
+                (click)="saveBook()">
+          {{ isEditing ? 'Update Book' : 'Add Book' }}
         </button>
       </div>
     </div>

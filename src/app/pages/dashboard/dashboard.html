@@ -1,46 +1,164 @@
-<!-- Welcome Card -->
-<div class="card shadow mb-4">
-  <div class="card-body">
-    <h4 class="card-title">Welcome, {{ userName }}! 👋</h4>
-    <p class="text-muted">Role: <strong>{{ userRole }}</strong></p>
-  </div>
-</div>
+<!-- ADMIN & LIBRARIAN DASHBOARD -->
+<ng-container *ngIf="isAdmin || isLibrarian">
 
-<!-- Stats Cards -->
-<div class="row g-3">
-  <div class="col-md-4" *ngIf="isAdmin || isLibrarian">
-    <div class="card text-white bg-primary shadow">
-      <div class="card-body">
-        <h5>📖 Total Books</h5>
-        <h2>{{ totalBooks }}</h2>
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <h4>Welcome, {{ userName }}! 👋</h4>
+      <p class="text-muted mb-0">Role: <strong>{{ userRole }}</strong></p>
+    </div>
+  </div>
+
+  <!-- Books Stats -->
+  <h6 class="text-muted fw-bold mb-2">📖 BOOKS</h6>
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="card text-white bg-primary shadow">
+        <div class="card-body">
+          <h6>Total Books</h6>
+          <h2>{{ totalBooks }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card text-white bg-success shadow">
+        <div class="card-body">
+          <h6>Available Books</h6>
+          <h2>{{ availableBooks }}</h2>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="col-md-4" *ngIf="isAdmin">
-    <div class="card text-white bg-success shadow">
-      <div class="card-body">
-        <h5>👥 Total Members</h5>
-        <h2>{{ totalMembers }}</h2>
+  <!-- Members Stats -->
+  <h6 class="text-muted fw-bold mb-2">👥 MEMBERS</h6>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card text-white bg-dark shadow">
+        <div class="card-body">
+          <h6>Total</h6>
+          <h2>{{ totalMembers }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-danger shadow">
+        <div class="card-body">
+          <h6>Admins</h6>
+          <h2>{{ adminCount }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-warning shadow">
+        <div class="card-body">
+          <h6>Librarians</h6>
+          <h2>{{ librarianCount }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-info shadow">
+        <div class="card-body">
+          <h6>Members</h6>
+          <h2>{{ memberCount }}</h2>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="col-md-4" *ngIf="isAdmin || isLibrarian">
-    <div class="card text-white bg-warning shadow">
-      <div class="card-body">
-        <h5>📋 Borrow Records</h5>
-        <h2>{{ totalBorrows }}</h2>
+  <!-- Borrow Stats -->
+  <h6 class="text-muted fw-bold mb-2">📋 BORROW RECORDS</h6>
+  <div class="row g-3">
+    <div class="col-md-3">
+      <div class="card text-white bg-secondary shadow">
+        <div class="card-body">
+          <h6>Total</h6>
+          <h2>{{ totalBorrows }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white shadow" style="background:#fd7e14">
+        <div class="card-body">
+          <h6>Pending</h6>
+          <h2>{{ pendingBorrows }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-success shadow">
+        <div class="card-body">
+          <h6>Approved</h6>
+          <h2>{{ approvedBorrows }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-primary shadow">
+        <div class="card-body">
+          <h6>Returned</h6>
+          <h2>{{ returnedBorrows }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- MEMBER DASHBOARD -->
+<ng-container *ngIf="isMember">
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <h4>Welcome, {{ userName }}! 👋</h4>
+      <p class="text-muted mb-0">Role: <strong>MEMBER</strong></p>
+    </div>
+  </div>
+
+  <h6 class="text-muted fw-bold mb-2">📖 BOOKS</h6>
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="card text-white bg-primary shadow">
+        <div class="card-body">
+          <h6>Total Books</h6>
+          <h2>{{ totalBooks }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card text-white bg-success shadow">
+        <div class="card-body">
+          <h6>Available</h6>
+          <h2>{{ availableBooks }}</h2>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="col-md-4" *ngIf="isMember">
-    <div class="card text-white bg-info shadow">
-      <div class="card-body">
-        <h5>📜 My Borrows</h5>
-        <h2>{{ myBorrows }}</h2>
+  <h6 class="text-muted fw-bold mb-2">📜 MY BORROWS</h6>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card text-white bg-info shadow">
+        <div class="card-body">
+          <h6>Total Borrows</h6>
+          <h2>{{ myBorrows }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white shadow" style="background:#fd7e14">
+        <div class="card-body">
+          <h6>Pending</h6>
+          <h2>{{ myPending }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-secondary shadow">
+        <div class="card-body">
+          <h6>Returned</h6>
+          <h2>{{ myReturned }}</h2>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</ng-container>

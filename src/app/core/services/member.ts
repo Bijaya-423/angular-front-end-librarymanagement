@@ -5,7 +5,6 @@ import { Member } from '../../models/member.model';
 
 @Injectable({ providedIn: 'root' })
 export class MemberService {
-
   private apiUrl = 'http://localhost:8081/api/members';
 
   constructor(private http: HttpClient) {}
